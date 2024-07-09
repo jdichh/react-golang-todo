@@ -71,6 +71,7 @@ func getTodos(ctx *gin.Context) {
     var todos []todoItem
 
     cursor, err := collection.Find(context.Background(), bson.M{})
+    
     if err != nil {
         ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch todos"})
         return
