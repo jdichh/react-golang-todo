@@ -2,9 +2,11 @@ import { Badge, Spinner } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { BASE_URL, Todo } from "../lib/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const TodoItem = ({ todo }: { todo: Todo }) => {
+  const queryClient = useQueryClient()
+
   const { mutate: updateTodo, isPending: isUpdating } = useMutation({
     mutationKey: ["updateTodo"],
     mutationFn: async () => {
@@ -30,6 +32,11 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
         throw Error;
       }
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["todos"]
+      })
+    }
   });
 
   return (
