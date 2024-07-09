@@ -12,8 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -57,8 +55,8 @@ func main() {
 
     router.GET("/api/todos", getTodos)
     router.POST("/api/todos", createTodo)
-    // router.PATCH("/api/todos/:id", updateTodo)
-    // router.DELETE("/api/todos/:id", deleteTodo)
+    router.PATCH("/api/todos/:id", updateTodo)
+    router.DELETE("/api/todos/:id", deleteTodo)
 
     port := os.Getenv("PORT")
     
@@ -122,10 +120,50 @@ func createTodo(ctx *gin.Context){
     ctx.JSON(http.StatusCreated, todo)
 }
 
-// func updateTodo(ctx *gin.Context){
-    
-// }
+func updateTodo(ctx *gin.Context){
+    id := ctx.Param("id")
+    ObjectID, err := primitive.ObjectIDFromHex(id)
 
-// func deleteTodo(ctx *gin.Context){
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error":"Invalid ID"})
+        return
+    }
+
+    filter := bson.M{"_id": ObjectID}
+    update := bson.M{
+        "$set": bson.M{
+            "completed": true,
+        },
+    }
+
+    _, err = collection.UpdateOne(context.Background(), filter, update)
+
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error":"Failed to update todo"})
+        return
+    }
+
+    ctx.JSON(http.StatusOK, gin.H{"message":"Successfully updated todo item"})
     
-// }
+}
+
+func deleteTodo(ctx *gin.Context){
+    id := ctx.Param("id")
+    ObjectID, err := primitive.ObjectIDFromHex(id)
+
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error":"Invalid ID"})
+        return
+    }
+
+    filter := bson.M{"_id": ObjectID}
+
+    _, err = collection.DeleteOne(context.Background(), filter)
+
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error":"Failed to delete todo"})
+        return
+    }
+
+    ctx.JSON(http.StatusOK, gin.H{"message":"Successfully deleted todo item"})
+}
