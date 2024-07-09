@@ -1,15 +1,49 @@
 import { Button, Input, Spinner } from "@chakra-ui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
+import { BASE_URL } from "../lib/types";
 
 const TodoForm = () => {
   const [newTodo, setNewTodo] = useState("");
-  const [isPending, setIsPending] = useState(false);
+  const queryClient = useQueryClient()
 
-  const createTodo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`${newTodo} added to list.`);
-  };
+  const { mutate: createTodo, isPending } = useMutation({
+    mutationKey: ["createTodo"],
+    mutationFn: async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      try {
+        const res = await fetch(BASE_URL + "/todos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            body: newTodo,
+          }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+
+        setNewTodo("");
+        return data;
+      } catch (error) {
+        throw Error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["todos"]
+      })
+    },
+    onError: (error) => {
+      alert(error.message)
+    }
+  });
 
   return (
     <form onSubmit={createTodo}>
