@@ -17,7 +17,7 @@ const TodoList = () => {
 
         return data || [];
       } catch (error) {
-        throw Error;
+        throw error;
       }
     },
   });

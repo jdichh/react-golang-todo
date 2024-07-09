@@ -32,7 +32,7 @@ const TodoForm = () => {
         setNewTodo("");
         return data;
       } catch (error) {
-        throw Error;
+        throw error;
       }
     },
     onSuccess: () => {

@@ -29,7 +29,7 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
 
         return data;
       } catch (error) {
-        throw Error;
+        throw error;
       }
     },
     onSuccess: () => {
