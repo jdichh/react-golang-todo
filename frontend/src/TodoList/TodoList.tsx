@@ -24,7 +24,7 @@ const TodoList = () => {
 
   return (
     <>
-      <p className="text-4xl uppercase font-semibold text-center my-2">
+      <p className="text-4xl font-semibold text-left pt-6 pb-3">
         Today's Tasks
       </p>
       {isLoading && (

@@ -6,7 +6,7 @@ const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   return (
-    <Box bg={useColorModeValue("gray.300", "gray.700")} className="rounded-md my-2 transition">
+    <Box bg={useColorModeValue("gray.300", "gray.700")} className="rounded-md m-2 transition">
       <nav className="flex gap-2 p-4 justify-between items-center">
         <h1 className="font-semibold">
           GoTaskYourself
