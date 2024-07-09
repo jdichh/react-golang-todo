@@ -6,18 +6,20 @@ import (
 	"log"
 	"os"
 
+	"net/http"
+
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"net/http"
 )
 
 type todoItem struct {
-    ID primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-    Completed bool `json:"completed?"`
+    ID primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+    Completed bool `json:"completed"`
     Body string `json:"body"`
 }
 
@@ -52,6 +54,8 @@ func main() {
     fmt.Println("Established connection to MongoDB Atlas.")
 
     collection = client.Database("golang_db").Collection("todos")
+
+    router.Use(cors.Default())
 
     router.GET("/api/todos", getTodos)
     router.POST("/api/todos", createTodo)

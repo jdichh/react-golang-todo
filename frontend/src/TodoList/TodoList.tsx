@@ -1,32 +1,26 @@
 import { Spinner, Stack } from "@chakra-ui/react";
-import { useState } from "react";
 import TodoItem from "../TodoItem/TodoItem";
+import { useQuery } from "@tanstack/react-query";
+import { BASE_URL, Todo } from "../lib/types";
 
 const TodoList = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { data: todos, isLoading } = useQuery<Todo[]>({
+    queryKey: ["todos"],
+    queryFn: async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/todos`);
+        const data = await res.json();
 
-  const todos = [
-    {
-      _id: 1,
-      body: "Buy groceries",
-      completed: true,
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+
+        return data || [];
+      } catch (error) {
+        throw Error;
+      }
     },
-    {
-      _id: 2,
-      body: "Walk the dog",
-      completed: false,
-    },
-    {
-      _id: 3,
-      body: "Do laundry",
-      completed: false,
-    },
-    {
-      _id: 4,
-      body: "Cook dinner",
-      completed: true,
-    },
-  ];
+  });
 
   return (
     <>
@@ -39,11 +33,11 @@ const TodoList = () => {
         </div>
       )}
       {!isLoading && todos?.length === 0 && (
-        <p className="text-xl text-center text-gray-500"> No tasks.</p>
+        <p className="text-xl text-center text-gray-500">No tasks.</p>
       )}
       <Stack gap={3}>
-        {todos?.map((todo) => (
-          <TodoItem key={todo._id} todo={todo} />
+        {todos?.map((todo, index) => (
+          <TodoItem key={index} todo={todo} />
         ))}
       </Stack>
     </>
