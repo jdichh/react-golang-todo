@@ -6,12 +6,12 @@ const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   return (
-    <Box bg={useColorModeValue("gray.400", "gray.700")} className="rounded-md my-2 transition">
+    <Box bg={useColorModeValue("gray.300", "gray.700")} className="rounded-md my-2 transition">
       <nav className="flex gap-2 p-4 justify-between items-center">
         <h1 className="font-semibold">
           GoTaskYourself
         </h1>
-        <Button onClick={toggleColorMode}>
+        <Button onClick={toggleColorMode} className="hover:scale-105 active:scale-95">
             {colorMode === "light" ? <MdLightMode /> : <MdDarkMode />}
         </Button>
       </nav>
