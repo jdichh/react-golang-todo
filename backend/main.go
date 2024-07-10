@@ -8,7 +8,7 @@ import (
 
 	"net/http"
 
-	"github.com/gin-contrib/cors"
+	// "github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
@@ -26,13 +26,15 @@ type todoItem struct {
 var collection *mongo.Collection
 
 func main() {
+    gin.SetMode(gin.ReleaseMode)
     router := gin.Default()
     router.SetTrustedProxies(nil)
 
-    err := godotenv.Load(".env")
-
-    if err != nil {
-        log.Fatal("Error loading .env: ", err)
+    if os.Getenv("ENV") != "development" {
+        err := godotenv.Load(".env")
+        if err != nil {
+            log.Fatal("Error loading .env: ", err)
+        }
     }
 
     MONGODB_URI := os.Getenv("MONGODB_URI")
@@ -55,7 +57,7 @@ func main() {
 
     collection = client.Database("golang_db").Collection("todos")
 
-    router.Use(cors.Default())
+    // router.Use(cors.Default())
 
     router.GET("/api/todos", getTodos)
     router.POST("/api/todos", createTodo)
@@ -66,6 +68,10 @@ func main() {
     
     if port == "" {
         port = "8080"
+    }
+
+    if os.Getenv("ENV") == "production" {
+        router.Static("/", "./frontend/dist")
     }
 
     router.Run("localhost:8080")
